@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { connection } from "../config/connectDB"
+import db from "../models/index"
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -10,8 +11,17 @@ const hashPassword = (password) => {
 
 const createNewUser = async (email, password, username) => {
     let hashPass = hashPassword(password);
-    await connection.execute(`insert into user(email, password, username) values(?, ?, ?)`, [email, hashPass, username])
+    // await connection.execute(`insert into user(email, password, username) values(?, ?, ?)`, [email, hashPass, username])
 
+    try {
+        await db.User.create({
+            email: email,
+            password: hashPass,
+            username: username
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const getListUser = async () => {
