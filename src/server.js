@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 configViewEngine(app);
 
 // test connection db
-connection();
+connection.testConnection();
 
 // init web route
 initWebRoutes(app);

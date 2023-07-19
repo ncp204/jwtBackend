@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import connection from "../config/connectDB"
+import { connection } from "../config/connectDB"
 
 const salt = bcrypt.genSaltSync(10);
 
