@@ -32,6 +32,14 @@ const deleteUser = async (userID) => {
     }
 }
 
+const updateUser = async (id, email, username) => {
+    try {
+        await connection.execute('Update user set email=?, username=? where id=?', [email, username, id]);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
-    hashPassword, createNewUser, getListUser, deleteUser
+    hashPassword, createNewUser, getListUser, deleteUser, updateUser
 }

@@ -26,6 +26,14 @@ const handleDeleteUser = (req, res) => {
     return res.redirect("/user")
 }
 
+const handleUpdateUser = async (req, res) => {
+    let userID = req.body.id;
+    let email = req.body.email;
+    let username = req.body.username;
+    await userService.updateUser(userID, email, username);
+    res.send('Update succeed')
+}
+
 module.exports = {
-    handleHelloWorld, handleUserPage, handleCreateNewUser, handleDeleteUser
+    handleHelloWorld, handleUserPage, handleCreateNewUser, handleDeleteUser, handleUpdateUser
 }
