@@ -24,32 +24,63 @@ const createNewUser = async (email, password, username) => {
     }
 }
 
+const getUserDetail = async (userID) => {
+    let user = {};
+    user = await db.User.findOne({
+        where: {
+            id: userID
+        }
+    });
+    user = user.get({ plain: true })
+    return user;
+}
+
 const getListUser = async () => {
     let users = [];
-    try {
-        const [result, fields] = await connection.execute('Select * from user');
-        return result ? result : users;
-    } catch (error) {
-        console.log('Check error: ', error);
-    }
+    // try {
+    //     const [result, fields] = await connection.execute('Select * from user');
+    //     return result ? result : users;
+    // } catch (error) {
+    //     console.log('Check error: ', error);
+    // }
+
+    users = await db.User.findAll();
+    return users;
 }
 
 const deleteUser = async (userID) => {
-    try {
-        await connection.execute('Delete from user where id = ?', [userID])
-    } catch (error) {
-        console.log(error);
-    }
+    // try {
+    //     await connection.execute('Delete from user where id = ?', [userID])
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
+    await db.User.destroy({
+        where: {
+            id: userID
+        }
+    })
 }
 
 const updateUser = async (id, email, username) => {
-    try {
-        await connection.execute('Update user set email=?, username=? where id=?', [email, username, id]);
-    } catch (error) {
-        console.log(error);
-    }
+    // try {
+    //     await connection.execute('Update user set email=?, username=? where id=?', [email, username, id]);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
+    await db.User.update(
+        {
+            email: email,
+            username: username
+        },
+        {
+            where: {
+                id: id
+            }
+        })
 }
 
 module.exports = {
-    hashPassword, createNewUser, getListUser, deleteUser, updateUser
+    hashPassword, createNewUser, getUserDetail, getListUser, deleteUser, updateUser
 }

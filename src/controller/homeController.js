@@ -10,6 +10,12 @@ const handleUserPage = async (req, res) => {
     return res.render("user.ejs", { listUser })
 }
 
+const handleUserDetail = async (req, res) => {
+    let userID = req.params.id;
+    let user = await userService.getUserDetail(userID);
+    return res.json(user);
+}
+
 const handleCreateNewUser = async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
@@ -35,5 +41,5 @@ const handleUpdateUser = async (req, res) => {
 }
 
 module.exports = {
-    handleHelloWorld, handleUserPage, handleCreateNewUser, handleDeleteUser, handleUpdateUser
+    handleHelloWorld, handleUserPage, handleUserDetail, handleCreateNewUser, handleDeleteUser, handleUpdateUser
 }
