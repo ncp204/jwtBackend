@@ -15,26 +15,62 @@
 <body>
     <div class="user-infor-container">
         <div class="container">
+            <h1>Create new user</h1>
             <div class="row mt-3">
-                <form class="col-6">
+                <form class="col-6" method="post" action="/user/create-user">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                        <input type="email" class="form-control" id="email" name="email" required
+                            aria-describedby="emailHelp">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password">
+                        <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="password" class="form-control" id="username">
+                        <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
                     </div>
                 </form>
             </div>
         </div>
+    </div>
+    <div class="table-users container">
+        <h1>List user</h1>
+        <table class="table table-striped table-hover table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Username</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% listUser.forEach(function(user, index) { %>
+                    <tr>
+                        <th scope="row">
+                            <%= user.id %>
+                        </th>
+                        <th scope="row">
+                            <%= user.email %>
+                        </th>
+                        <th scope="row">
+                            <%= user.username %>
+                        </th>
+                        <td>
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                            <form style="display: inline;" action="/delete-user/<%= user.id %>" method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
     </div>
 </body>
 
