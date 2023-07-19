@@ -10,14 +10,14 @@ const hashPassword = (password) => {
 
 const createNewUser = async (email, password, username) => {
     let hashPass = hashPassword(password);
-    await connection.execute(`insert into users(email, password, username) values(?, ?, ?)`, [email, hashPass, username])
+    await connection.execute(`insert into user(email, password, username) values(?, ?, ?)`, [email, hashPass, username])
 
 }
 
 const getListUser = async () => {
     let users = [];
     try {
-        const [result, fields] = await connection.execute('Select * from users');
+        const [result, fields] = await connection.execute('Select * from user');
         return result ? result : users;
     } catch (error) {
         console.log('Check error: ', error);
@@ -26,7 +26,7 @@ const getListUser = async () => {
 
 const deleteUser = async (userID) => {
     try {
-        await connection.execute('Delete from users where id = ?', [userID])
+        await connection.execute('Delete from user where id = ?', [userID])
     } catch (error) {
         console.log(error);
     }
