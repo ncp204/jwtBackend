@@ -5,24 +5,40 @@ import db from "../models/index"
 const salt = bcrypt.genSaltSync(10);
 
 const hashPassword = (password) => {
-    let hashPassword = bcrypt.hashSync(password, salt);
-    return hashPassword;
+    return new Promise(async (resolve, reject) => {
+        try {
+            let hashPassword = await bcrypt.hashSync(password, salt);
+            resolve(hashPassword)
+        } catch (error) {
+            reject(error)
+        }
+    })
 }
 
-const createNewUser = async (email, password, username) => {
-    let hashPass = hashPassword(password);
-    // await connection.execute(`insert into user(email, password, username) values(?, ?, ?)`, [email, hashPass, username])
-
-    try {
-        await db.User.create({
-            email: email,
-            password: hashPass,
-            username: username
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
+const createNewUser = async (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let hashPass = await hashPassword(data.password);
+            await db.User.create({
+                email: data.email,
+                password: hashPass,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                address: data.address,
+                phoneNumber: data.phoneNumber,
+                gender: data.gender === 1 ? true : false,
+                roleId: data.roleId
+            });
+            console.log(data);
+            resolve('Created new user succeed');
+        } catch (error) {
+            reject(error);
+        }
+    }).catch((error) => {
+        console.error('Error creating a new user:', error);
+        return 'Created new user error';
+    });
+};
 
 const getUserDetail = async (userID) => {
     let user = {};
@@ -44,7 +60,11 @@ const getListUser = async () => {
     //     console.log('Check error: ', error);
     // }
 
-    users = await db.User.findAll();
+    try {
+        users = await db.Users.findAll();
+    } catch (error) {
+        console.log(error);
+    }
     return users;
 }
 

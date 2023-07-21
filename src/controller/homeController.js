@@ -1,3 +1,4 @@
+import { json } from 'body-parser';
 import userService from '../service/userService'
 
 const handleHelloWorld = (req, res) => {
@@ -7,7 +8,7 @@ const handleHelloWorld = (req, res) => {
 const handleUserPage = async (req, res) => {
     // model => get data from database
     let listUser = await userService.getListUser();
-    return res.render("user.ejs", { listUser })
+    return res.json(listUser)
 }
 
 const handleUserDetail = async (req, res) => {
@@ -17,12 +18,8 @@ const handleUserDetail = async (req, res) => {
 }
 
 const handleCreateNewUser = async (req, res) => {
-    let email = req.body.email;
-    let password = req.body.password;
-    let username = req.body.username;
-
-    await userService.createNewUser(email, password, username)
-    return res.redirect("/user")
+    let message = await userService.createNewUser(req.body)
+    return res.send(message)
 }
 
 const handleDeleteUser = (req, res) => {
