@@ -40,67 +40,66 @@ const createNewUser = async (data) => {
     });
 };
 
-const getUserDetail = async (userID) => {
+const getUserByID = async (userID) => {
     let user = {};
-    user = await db.User.findOne({
-        where: {
-            id: userID
-        }
-    });
-    user = user.get({ plain: true })
-    return user;
+    try {
+        user = await db.User.findOne({
+            where: {
+                id: userID
+            }
+        });
+        user = user.get({ plain: true })
+        return user;
+    } catch (error) {
+        console.log('Error here: ', error);
+    }
 }
 
 const getListUser = async () => {
     let users = [];
-    // try {
-    //     const [result, fields] = await connection.execute('Select * from user');
-    //     return result ? result : users;
-    // } catch (error) {
-    //     console.log('Check error: ', error);
-    // }
-
     try {
-        users = await db.Users.findAll();
+        users = await db.User.findAll();
+        return users;
     } catch (error) {
-        console.log(error);
+        console.log('Error here: ', error);
     }
-    return users;
 }
 
-const deleteUser = async (userID) => {
-    // try {
-    //     await connection.execute('Delete from user where id = ?', [userID])
-    // } catch (error) {
-    //     console.log(error);
-    // }
-
-    await db.User.destroy({
-        where: {
-            id: userID
-        }
-    })
-}
-
-const updateUser = async (id, email, username) => {
-    // try {
-    //     await connection.execute('Update user set email=?, username=? where id=?', [email, username, id]);
-    // } catch (error) {
-    //     console.log(error);
-    // }
-
-    await db.User.update(
-        {
-            email: email,
-            username: username
-        },
-        {
+const deleteUserByID = async (userID) => {
+    try {
+        await db.User.destroy({
             where: {
-                id: id
+                id: userID
             }
         })
+        return 'Delete user succeed';
+    } catch (error) {
+        console.log('Error here: ', error);
+    }
+}
+
+const updateUser = async (id, email, firstName, lastName, address) => {
+    if (id && email && firstName && lastName && address) {
+        let user = await getUserByID(id);
+        if (user) {
+            await db.User.update(
+                {
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    address: address
+                },
+                {
+                    where: {
+                        id: id
+                    }
+                })
+        }
+    } else {
+        return "Missing required params"
+    }
 }
 
 module.exports = {
-    hashPassword, createNewUser, getUserDetail, getListUser, deleteUser, updateUser
+    hashPassword, createNewUser, getUserByID, getListUser, deleteUserByID, updateUser
 }

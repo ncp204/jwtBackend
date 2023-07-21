@@ -8,12 +8,12 @@ const handleHelloWorld = (req, res) => {
 const handleUserPage = async (req, res) => {
     // model => get data from database
     let listUser = await userService.getListUser();
-    return res.json(listUser)
+    return res.json(listUser);
 }
 
 const handleUserDetail = async (req, res) => {
     let userID = req.params.id;
-    let user = await userService.getUserDetail(userID);
+    let user = await userService.getUserByID(userID);
     return res.json(user);
 }
 
@@ -24,17 +24,18 @@ const handleCreateNewUser = async (req, res) => {
 
 const handleDeleteUser = (req, res) => {
     let userId = req.params.id;
-    console.log(userId);
-    userService.deleteUser(userId)
-    return res.redirect("/user")
+    let message = userService.deleteUserByID(userId)
+    return res.send(message)
 }
 
 const handleUpdateUser = async (req, res) => {
     let userID = req.body.id;
     let email = req.body.email;
-    let username = req.body.username;
-    await userService.updateUser(userID, email, username);
-    res.send('Update succeed')
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let address = req.body.address;
+    let mess = await userService.updateUser(userID, email, firstName, lastName, address);
+    res.send(mess)
 }
 
 module.exports = {
