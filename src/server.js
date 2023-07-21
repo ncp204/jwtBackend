@@ -37,13 +37,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // config view engine
 configViewEngine(app);
 
-// test connection db
-connection.testConnection();
-
 // init web route
 initWebRoutes(app);
 
-JWTAction.createJWT();
+// test connection db
+connection.testConnection();
+
+// JWTAction.createJWT();
 
 app.listen(PORT, () => {
     console.log(">>> JWT Backend is running on the port: ", PORT);
