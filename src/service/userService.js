@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { connection } from "../config/connectDB"
 import db from "../models/index"
+import { response } from 'express';
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -14,31 +15,6 @@ const hashPassword = (password) => {
         }
     })
 }
-
-const createNewUser = async (data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let hashPass = await hashPassword(data.password);
-            await db.User.create({
-                email: data.email,
-                password: hashPass,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                phoneNumber: data.phoneNumber,
-                gender: data.gender === 1 ? true : false,
-                roleId: data.roleId
-            });
-            console.log(data);
-            resolve('Created new user succeed');
-        } catch (error) {
-            reject(error);
-        }
-    }).catch((error) => {
-        console.error('Error creating a new user:', error);
-        return 'Created new user error';
-    });
-};
 
 const getUserByID = async (userID) => {
     let user = {};
@@ -62,41 +38,6 @@ const getListUser = async () => {
         return users;
     } catch (error) {
         console.log('Error here: ', error);
-    }
-}
-
-const deleteUserByID = async (userID) => {
-    try {
-        await db.User.destroy({
-            where: {
-                id: userID
-            }
-        })
-        return 'Delete user succeed';
-    } catch (error) {
-        console.log('Error here: ', error);
-    }
-}
-
-const updateUser = async (id, email, firstName, lastName, address) => {
-    if (id && email && firstName && lastName && address) {
-        let user = await getUserByID(id);
-        if (user) {
-            await db.User.update(
-                {
-                    email: email,
-                    firstName: firstName,
-                    lastName: lastName,
-                    address: address
-                },
-                {
-                    where: {
-                        id: id
-                    }
-                })
-        }
-    } else {
-        return "Missing required params"
     }
 }
 
@@ -168,7 +109,6 @@ const getAllUser = (userId) => {
                         exclude: ['password']
                     }
                 })
-                console.log(users);
             }
             if (userId && userId !== 'ALL') {
                 users = await db.User.findOne({
@@ -185,8 +125,122 @@ const getAllUser = (userId) => {
     })
 }
 
+const createNewUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // check email exist
+            let check = await checkUserEmail(data.email);
+            if (check === true) {
+                resolve({
+                    errCode: 1,
+                    message: 'Your email is already in used'
+                })
+            } else {
+                let hashPass = await hashPassword(data.password);
+                await db.User.create({
+                    email: data.email,
+                    password: hashPass,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    phoneNumber: data.phoneNumber,
+                    gender: data.gender === 1 ? true : false,
+                    roleId: data.roleId
+                });
+                resolve({
+                    errCode: 0,
+                    message: 'Ok'
+                });
+            }
+
+        } catch (error) {
+            reject(error);
+        }
+    })
+};
+
+
+const deleteUserByID = (userID) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!userID) {
+                resolve({
+                    errCode: 1,
+                    message: "Missing required parameters"
+                })
+            } else {
+                let user = await db.User.findOne({ where: { id: userID } });
+                if (!user) {
+                    resolve({
+                        errCode: 2,
+                        message: "User is not exist"
+                    })
+                } else {
+                    await db.User.destroy({
+                        where: {
+                            id: userID
+                        }
+                    })
+                    resolve({
+                        errCode: 0,
+                        message: "Delete succeed"
+                    })
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+            reject(error)
+        }
+    })
+}
+
+const updateUser = (body) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let id = body.id;
+            let email = body.email;
+            let firstName = body.firstName;
+            let lastName = body.lastName;
+            let address = body.address;
+
+            if (id && email && firstName && lastName && address) {
+                let user = await getAllUser(id);
+                if (user) {
+                    await db.User.update(
+                        {
+                            email: email,
+                            firstName: firstName,
+                            lastName: lastName,
+                            address: address
+                        },
+                        {
+                            where: {
+                                id: id
+                            }
+                        })
+                    resolve({
+                        errCode: 0,
+                        message: "Update succeed"
+                    })
+                }
+            } else {
+                resolve({
+                    errCode: 0,
+                    message: "Missing required params"
+                })
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
-    hashPassword, createNewUser, getUserByID, getListUser, deleteUserByID, updateUser,
+    hashPassword, getUserByID, getListUser,
     handleUserLogin,
-    getAllUser
+    getAllUser,
+    createNewUser,
+    deleteUserByID,
+    updateUser
 }
