@@ -18,6 +18,7 @@ const initWebRoutes = (app) => {
     router.put('/update-user', homeController.handleUpdateUser)
 
     router.post('/api/login', userController.handleLogin)
+    router.get('/api/user/:id', userController.handleGetAllUser)
 
 
     return app.use("/", router)
