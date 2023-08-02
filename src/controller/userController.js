@@ -55,10 +55,24 @@ const handleUpdateUser = async (req, res) => {
     return res.status(200).json(message)
 }
 
+const getAllCode = async (req, res) => {
+    try {
+        let data = await userService.getAllCodeService(req.query.type);
+        return res.status(200).json(data)
+    } catch (error) {
+        console.log('check log error: ', error);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from server'
+        })
+    }
+}
+
 module.exports = {
     handleLogin,
     handleGetAllUser,
     handleCreateNewUser,
     handleDeleteUser,
-    handleUpdateUser
+    handleUpdateUser,
+    getAllCode
 }

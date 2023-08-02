@@ -23,6 +23,7 @@ const initWebRoutes = (app) => {
     router.delete('/api/user/delete', userController.handleDeleteUser)
     router.put('/api/user/update', userController.handleUpdateUser)
 
+    router.get('/allcode', userController.getAllCode)
 
     return app.use("/", router)
 }
